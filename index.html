@@ -244,6 +244,7 @@
             <div class="warning-box">
                 <h3>⚠️ PERHATIAN - ATURAN UJIAN:</h3>
                 <ul>
+                    <li>Hanya siswa terdaftar yang dapat mengikuti ujian</li>
                     <li>Nama hanya dapat diisi SATU KALI</li>
                     <li>DILARANG keluar dari tab/jendela ujian</li>
                     <li>Maksimal 3 kali pelanggaran = ujian otomatis tersubmit</li>
@@ -255,7 +256,10 @@
 
             <div class="form-group">
                 <label for="studentName">Nama Lengkap Siswa:</label>
-                <input type="text" id="studentName" placeholder="Masukkan nama lengkap Anda" required>
+                <input type="text" id="studentName" placeholder="Masukkan nama lengkap Anda (sesuai daftar)" required>
+                <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">
+                    * Nama harus sesuai dengan daftar siswa yang terdaftar
+                </small>
             </div>
 
             <button onclick="startExam()">Mulai Ujian</button>
@@ -358,6 +362,12 @@
             }
         ];
 
+        // Daftar siswa yang diizinkan mengikuti ujian
+        const allowedStudents = [
+            "Ucup",
+            "Zaid"
+        ];
+
         let violationCount = 0;
         let timerInterval;
         let timeLeft = 3600; // 60 menit dalam detik
@@ -412,18 +422,32 @@
             const name = document.getElementById('studentName').value.trim();
             
             if (!name) {
-                alert('Nama harus diisi!');
+                alert('❌ Nama harus diisi!');
                 return;
             }
 
-            // Check if name already exists in localStorage
-            if (localStorage.getItem('examTaken')) {
-                alert('Anda sudah pernah mengikuti ujian ini!');
+            // Check if name is in allowed list (case-insensitive)
+            const isAllowed = allowedStudents.some(
+                student => student.toLowerCase() === name.toLowerCase()
+            );
+
+            if (!isAllowed) {
+                alert('❌ AKSES DITOLAK!\n\nNama Anda tidak terdaftar dalam daftar peserta ujian.\nSilakan hubungi guru jika Anda merasa ini adalah kesalahan.');
+                document.getElementById('studentName').value = '';
+                document.getElementById('studentName').focus();
                 return;
             }
 
-            // Save name to localStorage (can only input once)
+            // Check if this student already took the exam
+            const examKey = `exam_${name.toLowerCase().replace(/\s+/g, '_')}`;
+            if (localStorage.getItem(examKey)) {
+                alert(`❌ ${name} sudah pernah mengikuti ujian ini!\n\nSetiap siswa hanya dapat mengikuti ujian satu kali.`);
+                return;
+            }
+
+            // Save to localStorage with student-specific key
             localStorage.setItem('studentName', name);
+            localStorage.setItem(examKey, 'true');
             localStorage.setItem('examTaken', 'true');
 
             // Display name
