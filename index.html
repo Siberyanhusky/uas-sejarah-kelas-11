@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian Akhir Siswa - Sejarah Indonesia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            user-select: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .warning-box ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .student-info {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        .violation-counter {
+            background: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 16px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .option {
+            margin-bottom: 10px;
+        }
+
+        .option label {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .option label:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: #e8eaff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .score {
+            font-size: 72px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .result-detail {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="loginScreen">
+            <h1>🎓 Ujian Akhir Sejarah Indonesia</h1>
+            <p class="subtitle">Sistem Ujian Online Aman</p>
+            
+            <div class="warning-box">
+                <h3>⚠️ PERHATIAN - ATURAN UJIAN:</h3>
+                <ul>
+                    <li>Nama hanya dapat diisi SATU KALI</li>
+                    <li>DILARANG keluar dari tab/jendela ujian</li>
+                    <li>Maksimal 3 kali pelanggaran = ujian otomatis tersubmit</li>
+                    <li>Copy-paste dan klik kanan dinonaktifkan</li>
+                    <li>Waktu ujian: 10 menit</li>
+                    <li>Ujian akan otomatis tersubmit saat waktu habis</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="studentName">Nama Lengkap Siswa:</label>
+                <input type="text" id="studentName" placeholder="Masukkan nama lengkap Anda" required>
+            </div>
+
+            <button onclick="startExam()">Mulai Ujian</button>
+        </div>
+
+        <!-- Exam Screen -->
+        <div id="examScreen" class="hidden">
+            <div class="exam-header">
+                <div class="student-info">👤 <span id="displayName"></span></div>
+                <div class="timer" id="timer">10:00</div>
+                <div class="violation-counter" id="violationCounter">Pelanggaran: 0/3</div>
+            </div>
+
+            <form id="examForm">
+                <!-- Questions will be inserted here -->
+            </form>
+
+            <button onclick="submitExam()">Serahkan Ujian</button>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="hidden">
+            <div class="result-container">
+                <h1>✅ Ujian Selesai!</h1>
+                <div class="score" id="scoreDisplay">0</div>
+                <p style="font-size: 18px; color: #666;">Nilai Anda</p>
+                
+                <div class="result-detail">
+                    <p><strong>Nama:</strong> <span id="resultName"></span></p>
+                    <p><strong>Jawaban Benar:</strong> <span id="correctCount"></span> dari 5 soal</p>
+                    <p><strong>Pelanggaran:</strong> <span id="finalViolations"></span> kali</p>
+                    <p><strong>Waktu Tersisa:</strong> <span id="timeRemaining"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data soal dan kunci jawaban
+        const questions = [
+            {
+                number: 1,
+                question: "Salah satu dampak politik dari penjajahan kolonial di Indonesia adalah …",
+                options: {
+                    A: "Penguasaan lahan pertanian oleh tuan tanah lokal",
+                    B: "Terbentuknya struktur pemerintahan tradisional yang lebih kuat",
+                    C: "Munculnya perlawanan rakyat terhadap sistem pemerintahan asing",
+                    D: "Berkembangnya teknologi komunikasi di pedesaan",
+                    E: "Meningkatnya perdagangan antarpulau secara mandiri"
+                },
+                answer: "C"
+            },
+            {
+                number: 2,
+                question: "Sistem tanam paksa (Cultuurstelsel) yang diterapkan Belanda pada abad ke-19 berdampak pada …",
+                options: {
+                    A: "Meningkatnya kesejahteraan petani Jawa",
+                    B: "Terbentuknya industri gula milik rakyat",
+                    C: "Berkembangnya pendidikan modern bagi bumiputra",
+                    D: "Terjadinya eksploitasi tenaga dan lahan pertanian rakyat",
+                    E: "Menurunnya impor hasil bumi dari Indonesia ke Eropa"
+                },
+                answer: "D"
+            },
+            {
+                number: 3,
+                question: "Dalam bidang sosial, penjajahan kolonial menyebabkan stratifikasi sosial di Hindia Belanda. Dampak paling terlihat adalah …",
+                options: {
+                    A: "Semua golongan masyarakat memiliki hak politik yang sama",
+                    B: "Golongan bumiputra ditempatkan pada lapisan sosial terbawah",
+                    C: "Golongan Eropa diwajibkan mengikuti adat lokal",
+                    D: "Adanya larangan pendidikan bagi kaum bangsawan",
+                    E: "Masyarakat pribumi memiliki kebebasan pers"
+                },
+                answer: "B"
+            },
+            {
+                number: 4,
+                question: "Kegiatan ekonomi kolonial menyebabkan hilangnya kemandirian ekonomi masyarakat Indonesia karena …",
+                options: {
+                    A: "Rakyat diberi kebebasan menentukan komoditas perdagangan",
+                    B: "Pemerintah kolonial mengutamakan kebutuhan pangan lokal",
+                    C: "Masyarakat diarahkan untuk menanam tanaman ekspor",
+                    D: "Petani bebas menjual hasil bumi ke negara lain",
+                    E: "Perdagangan hanya diatur oleh lembaga desa"
+                },
+                answer: "C"
+            },
+            {
+                number: 5,
+                question: "Masuknya agama Kristen melalui misionaris Eropa merupakan salah satu dampak kolonial di bidang …",
+                options: {
+                    A: "Politik",
+                    B: "Ekonomi",
+                    C: "Sosial",
+                    D: "Budaya",
+                    E: "Pertahanan dan Keamanan"
+                },
+                answer: "D"
+            }
+        ];
+
+        let violationCount = 0;
+        let timerInterval;
+        let timeLeft = 600; // 10 menit dalam detik
+        let examStarted = false;
+
+        // Security: Disable right click, copy, paste
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('paste', e => e.preventDefault());
+        document.addEventListener('cut', e => e.preventDefault());
+
+        // Prevent F12, Ctrl+Shift+I, Ctrl+U
+        document.addEventListener('keydown', function(e) {
+            if (examStarted) {
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                    (e.ctrlKey && e.key === 'u')) {
+                    e.preventDefault();
+                    showAlert('⚠️ Developer tools dinonaktifkan selama ujian!');
+                }
+            }
+        });
+
+        // Detect tab switching / window blur
+        document.addEventListener('visibilitychange', function() {
+            if (examStarted && document.hidden) {
+                violationCount++;
+                updateViolationCounter();
+                showAlert(`⚠️ PELANGGARAN ${violationCount}/3: Jangan keluar dari tab ujian!`);
+                
+                if (violationCount >= 3) {
+                    showAlert('❌ Ujian otomatis diserahkan karena terlalu banyak pelanggaran!');
+                    setTimeout(submitExam, 2000);
+                }
+            }
+        });
+
+        window.addEventListener('blur', function() {
+            if (examStarted) {
+                violationCount++;
+                updateViolationCounter();
+                showAlert(`⚠️ PELANGGARAN ${violationCount}/3: Jangan keluar dari jendela ujian!`);
+                
+                if (violationCount >= 3) {
+                    showAlert('❌ Ujian otomatis diserahkan karena terlalu banyak pelanggaran!');
+                    setTimeout(submitExam, 2000);
+                }
+            }
+        });
+
+        function startExam() {
+            const name = document.getElementById('studentName').value.trim();
+            
+            if (!name) {
+                alert('Nama harus diisi!');
+                return;
+            }
+
+            // Check if name already exists in localStorage
+            if (localStorage.getItem('examTaken')) {
+                alert('Anda sudah pernah mengikuti ujian ini!');
+                return;
+            }
+
+            // Save name to localStorage (can only input once)
+            localStorage.setItem('studentName', name);
+            localStorage.setItem('examTaken', 'true');
+
+            // Display name
+            document.getElementById('displayName').textContent = name;
+
+            // Hide login, show exam
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('examScreen').classList.remove('hidden');
+
+            // Generate questions
+            generateQuestions();
+
+            // Start timer
+            startTimer();
+            examStarted = true;
+
+            // Try to enter fullscreen
+            try {
+                document.documentElement.requestFullscreen();
+            } catch(e) {
+                console.log('Fullscreen not supported');
+            }
+        }
+
+        function generateQuestions() {
+            const form = document.getElementById('examForm');
+            form.innerHTML = '';
+
+            questions.forEach(q => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container';
+                
+                let optionsHTML = '';
+                for (let [key, value] of Object.entries(q.options)) {
+                    optionsHTML += `
+                        <div class="option">
+                            <input type="radio" name="q${q.number}" value="${key}" id="q${q.number}${key}">
+                            <label for="q${q.number}${key}">${key}. ${value}</label>
+                        </div>
+                    `;
+                }
+
+                questionDiv.innerHTML = `
+                    <div class="question-number">Soal ${q.number}</div>
+                    <div class="question-text">${q.question}</div>
+                    ${optionsHTML}
+                `;
+
+                form.appendChild(questionDiv);
+            });
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showAlert('⏰ Waktu habis! Ujian otomatis diserahkan.');
+                    setTimeout(submitExam, 2000);
+                }
+            }, 1000);
+        }
+
+        function updateViolationCounter() {
+            document.getElementById('violationCounter').textContent = 
+                `Pelanggaran: ${violationCount}/3`;
+        }
+
+        function submitExam() {
+            if (!examStarted) return;
+            
+            examStarted = false;
+            clearInterval(timerInterval);
+
+            // Calculate score
+            let correctAnswers = 0;
+            questions.forEach(q => {
+                const selected = document.querySelector(`input[name="q${q.number}"]:checked`);
+                if (selected && selected.value === q.answer) {
+                    correctAnswers++;
+                }
+            });
+
+            const score = (correctAnswers / questions.length) * 100;
+            const name = localStorage.getItem('studentName');
+
+            // Show results
+            document.getElementById('examScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            document.getElementById('scoreDisplay').textContent = score.toFixed(0);
+            document.getElementById('resultName').textContent = name;
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('finalViolations').textContent = violationCount;
+            
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timeRemaining').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Exit fullscreen
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+        }
+
+        function showAlert(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert';
+            alert.textContent = message;
+            document.body.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // Check if already taken exam on page load
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('examTaken')) {
+                const name = localStorage.getItem('studentName');
+                alert(`Ujian sudah pernah dikerjakan oleh: ${name}`);
+                document.getElementById('studentName').value = name;
+                document.getElementById('studentName').disabled = true;
+                document.querySelector('#loginScreen button').disabled = true;
+                document.querySelector('#loginScreen button').textContent = 'Ujian Sudah Dikerjakan';
+            }
+        });
+    </script>
+</body>
+</html>
